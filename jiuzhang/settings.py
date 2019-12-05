@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app_todo.apps.AppTodoConfig',
+    'rest_framework',
+    'redis'
 ]
 
 MIDDLEWARE = [
@@ -48,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'app_todo.cors.CORSMiddleware'
 ]
 
 ROOT_URLCONF = 'jiuzhang.urls'
@@ -77,11 +80,33 @@ WSGI_APPLICATION = 'jiuzhang.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'jiuzhang',#数据库名称
+        'USER': 'postgres',#拥有者，这个一般没修改
+        'PASSWORD': '123456',#密码，自己设定的
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
+CACHES = {
+    'default': {
+        # 'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',  # 缓存到本地
+        'BACKEND': 'redis_cache.cache.RedisCache',
+        'LOCATION': 'localhost:6379',
+        # 'TIMEOUT': 60,
+    }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': ['rest_framework.renderers.JSONRenderer', 'rest_framework.renderers.BrowsableAPIRenderer',],
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
+    'ALLOWED_VERSIONS': ['v1', 'v2'],  # 允许的版本
+    'VERSION_PARAM': 'version',  # 参数
+    'DEFAULT_VERSION': 'v1',  # 默认版本
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
