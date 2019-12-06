@@ -24,8 +24,8 @@ SECRET_KEY = 'xik3z6htf_-j^8dxj*rqnyjd8h$=m7s&66@4d#f_$pu@nd*e)='
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
+APPEND_SLASH = False
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app_todo.apps.AppTodoConfig',
     'rest_framework',
-    'redis'
 ]
 
 MIDDLEWARE = [
@@ -83,9 +82,9 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'jiuzhang',#数据库名称
-        'USER': 'postgres',#拥有者，这个一般没修改
-        'PASSWORD': '123456',#密码，自己设定的
+        'NAME': 'jiuzhang',  # 数据库名称
+        'USER': 'postgres',  # 拥有者，这个一般没修改
+        'PASSWORD': '123456',  # 密码，自己设定的
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -94,8 +93,8 @@ DATABASES = {
 CACHES = {
     'default': {
         # 'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',  # 缓存到本地
-        'BACKEND': 'redis_cache.cache.RedisCache',
-        'LOCATION': 'localhost:6379',
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://localhost:6379',
         # 'TIMEOUT': 60,
     }
 }

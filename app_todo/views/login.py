@@ -9,7 +9,7 @@ import uuid
 
 class AuthView(APIView):
     def post(self, request, *args, **kwargs):
-        print(request.data.get('username'))
+        print(request.data.get('username'), '------')
         ret = {'code': 1000}
         username = request.data.get('username')
         password = request.data.get('password')
@@ -33,31 +33,3 @@ class AuthView(APIView):
                 # redis_server().set(username, [password, uid, 1], 60*60*6)
                 cache.set(username, [hash_password, uid, 1], 60 * 60 * 6)
         return Response(ret)
-
-
-class GetUrl(APIView):
-
-    def post(self, request, *args, **kwargs):
-        # weibo_auth_url = "https://api.weibo.com/oauth2/authorize"
-        redirect_weibo_url = "http://127.0.0.1:8000/login/weibo/"
-        client_id, client_secret = weibo()
-        auth_url = "https://api.weibo.com/oauth2/authorize?client_id={client_id}&redirect_uri={redirect_uri}".format(
-            client_id=client_id, redirect_uri=redirect_weibo_url)
-        ret = {"urls": auth_url}
-        # print(auth_url)
-        return Response(ret)
-
-
-class GetMessage(APIView):
-    def get(self, request, *args, **kwarts):
-        code = request.data.get('code')
-        import requests
-        client_id = 3214515364
-        client_secret = "1b9b415350019674abfda80d0ef24cca"
-        redirect_uri = "http://127.0.0.1:8080/home"
-        # code = "88cfffece305b7577a12cc8419bb0612"
-        get_Access_token_url = "https://api.weibo.com/oauth2/access_token?client_id={}&client_secret={}&redirect_uri={}&code={}".format(
-            client_id, client_secret, redirect_uri, code)
-        response = requests.post(url=get_Access_token_url)
-        print(response.text)
-        return Response()
