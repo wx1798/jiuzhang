@@ -1,14 +1,16 @@
 from django.core.cache import cache
 from rest_framework.views import APIView
+from rest_framework.viewsets import GenericViewSet, ViewSetMixin
 from rest_framework.response import Response
 from ast import literal_eval  # 将字符串转成字典
 from app_todo.util.hash_pwd import hashpwd
 from app_todo.models import UserInfo
 import uuid
+from app_todo.util.email import sender_code
 
 
-class AuthView(APIView):
-    def post(self, request, *args, **kwargs):
+class AuthView(ViewSetMixin, APIView):
+    def login(self, request, *args, **kwargs):
         print(request.data.get('username'), '------')
         ret = {'code': 1000}
         username = request.data.get('username')
@@ -32,4 +34,32 @@ class AuthView(APIView):
                 ret['token'] = uid
                 # redis_server().set(username, [password, uid, 1], 60*60*6)
                 cache.set(username, [hash_password, uid, 1], 60 * 60 * 6)
+        return Response(ret)
+
+    def register(self, request, *args, **kwargs):
+        ret = {'code': 1000}
+        username = request.data.get("username")
+        password = request.data.get("password")
+        email = request.data.get("email")
+        check_code = request.data.get("checkCode")
+        if check_code == cache.get("jwt"+username):
+            if username and password:
+                UserInfo.objects.create(user=username, password=hashpwd(password), email=email)
+                ret['path'] = '/login/'
+                return Response(ret)
+        ret['code'] = 3002
+        ret['data'] = 'error'
+        return Response(ret)
+
+    def send(self, request, *args, **kwargs):
+        ret = {'code': 1000}
+        username = request.data.get("username")
+        email = request.data.get("email")
+        is_success = sender_code(email)
+        if is_success:
+            ret['data'] = "请注意查收"
+            cache.set('jwt'+username, is_success)
+        else:
+            ret['code'] = 1001
+            ret['data'] = "邮箱错误"
         return Response(ret)
