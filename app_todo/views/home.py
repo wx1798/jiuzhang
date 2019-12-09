@@ -6,7 +6,6 @@ from app_todo.models import Todo, Priority, UserInfo
 import time
 from rest_framework.viewsets import GenericViewSet, ViewSetMixin
 from functools import wraps
-import json
 
 
 def decorate(func):
@@ -48,6 +47,16 @@ class TimeSerializer(serializers.ModelSerializer):
         # exclude = ('add_time',):  除去指定的某些字段
 
 
+class HomeSerializer(serializers.ModelSerializer):
+    datetime = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    index = serializers.CharField(source='priority.index')
+    key = serializers.CharField(source='id')
+
+    class Meta:
+        model = Todo
+        fields = ['key', 'desc',  'index', 'status', 'datetime']   # 查询全部 '__all__'
+
+
 class HomeView(ViewSetMixin, APIView):
     def home(self, request, *args, **kwargs):
         """
@@ -61,11 +70,34 @@ class HomeView(ViewSetMixin, APIView):
         username = request.data.get("username")
         token = request.data.get("token")
         date = request.data.get("datetime")
+        queryset = Todo.objects.filter(user__user=username)
+        serializers_msg = HomeSerializer(instance=queryset, many=True)
+        ret["data"] = serializers_msg.data
+        return Response(ret)
+
+    def today(self, request, *args, **kwargs):
+        """
+        今天
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        ret = {"code": 1000, "data": None}
+        username = request.data.get("username")
+        token = request.data.get("token")
+        date = request.data.get("datetime")
         datetime = date.split('-')
         queryset = Todo.objects.filter(user__user=username, datetime__year=datetime[0], datetime__month=datetime[1],
                                        datetime__day=datetime[2])
-        serializers_msg = TodoSerializer(instance=queryset, many=True)
-        ret["data"] = serializers_msg.data
+        # serializers_msg = TodoSerializer(instance=queryset, many=True)
+        # ret["data"] = serializers_msg.data
+        # return Response(ret)
+        if queryset:
+            serializers_msg = HomeSerializer(instance=queryset, many=True)
+            ret["data"] = serializers_msg.data
+        else:
+            ret["code"] = 4000
         return Response(ret)
 
     def update(self, request, *args, **kwargs):
@@ -74,11 +106,11 @@ class HomeView(ViewSetMixin, APIView):
         token = request.data.get("token")
         status = request.data.get("status")
         tid = request.data.get("tid")
-        # datetime = request.data.get("datetime")
+        datetime = request.data.get("datetime")
         desc = request.data.get("desc")
-        # index = request.data.get("index")
-        # index_obj = Priority.objects.get(index=index)
-        Todo.objects.filter(id=tid).update(desc=desc)
+        index = request.data.get("index")
+        index_obj = Priority.objects.get(index=index)
+        Todo.objects.filter(id=tid).update(desc=desc, status=status, datetime=datetime, priority=index_obj)
         return Response(ret)
 
     def add(self, request, *args, **kwargs):
@@ -90,8 +122,8 @@ class HomeView(ViewSetMixin, APIView):
         status = request.data.get("status")
         user_obj = UserInfo.objects.get(user=username)
         index_obj = Priority.objects.get(index=index)
-        add_obj = Todo.objects.create(user=user_obj, desc=desc, datetime=date, status=status, priority=index_obj)
-        data = {"key": add_obj.id, "desc": add_obj.desc, "datetime": add_obj.datetime, "index": add_obj.priority.index}
+        add_obj = Todo.objects.create(user=user_obj, desc=desc, datetime=date, status=0, priority=index_obj)
+        data = {"key": add_obj.id, "desc": add_obj.desc, "status": add_obj.status, "datetime": add_obj.datetime, "index": add_obj.priority.index}
         ret["data"] = data
         return Response(ret)
 
@@ -110,7 +142,7 @@ class HomeView(ViewSetMixin, APIView):
         index = request.data.get("index")
         queryset = Todo.objects.filter(user__user=username, priority__index=index).order_by("datetime")
         if queryset:
-            serializers_msg = TimeSerializer(instance=queryset, many=True)
+            serializers_msg = HomeSerializer(instance=queryset, many=True)
             ret["data"] = serializers_msg.data
         else:
             ret["code"] = 4000
@@ -137,7 +169,7 @@ class HomeView(ViewSetMixin, APIView):
         queryset = Todo.objects.filter(user__user=username, datetime__year=datetime[0], datetime__month=datetime[1],
                                        datetime__day=datetime[2])
         if queryset:
-            serializers_msg = TodoSerializer(instance=queryset, many=True)
+            serializers_msg = HomeSerializer(instance=queryset, many=True)
             ret["data"] = serializers_msg.data
         else:
             ret["code"] = 4000

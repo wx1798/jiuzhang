@@ -5,6 +5,7 @@ urlpatterns = [
     re_path(r'^login/$', login.AuthView.as_view({'post': 'login'})),
     re_path(r'^register/$', login.AuthView.as_view({'post': 'register'})),
     re_path(r'^home/$', home.HomeView.as_view({'post': 'home'})),
+    re_path(r'^today/$', home.HomeView.as_view({'post': 'today'})),
     re_path('^update/$', home.HomeView.as_view({'post': 'update'})),
     re_path('^add/$', home.HomeView.as_view({'post': 'add'})),
     re_path('^delete/$', home.HomeView.as_view({'post': "delete"})),

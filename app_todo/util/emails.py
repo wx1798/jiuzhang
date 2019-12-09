@@ -7,9 +7,9 @@ import string
 # mail_server = 'smtp.qq.com'
 
 
-def get_mail_server(sender):
-    key = sender[sender.index('@')+1:]
-    return "smtp." + key
+# def get_mail_server(sender):
+#     key = sender[sender.index('@')+1:]
+#     return "smtp." + key
 
 
 def sender_email(receiver, send_msg):
@@ -17,7 +17,6 @@ def sender_email(receiver, send_msg):
     port = '25'
     sender = '1483906080@qq.com'
     sender_pass_code = 'cewotngmphloijab'
-    mail_msg = random.sample(string.digits, 5)
     msg = MIMEText(send_msg, 'plain', 'utf-8')  # 正文 ， MIME的subtype纯文本， 编码
     msg['From'] = sender
     msg['To'] = receiver
@@ -57,3 +56,6 @@ def sender_code(receiver):
     except:
         server.quit()
         return
+
+
+# 'zhengquantao80@gmail.com'

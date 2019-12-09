@@ -19,7 +19,7 @@ class Todo(models.Model):
     id = models.AutoField(verbose_name='ID', primary_key=True)
     desc = models.TextField(verbose_name='详情', null=True)
     datetime = models.DateTimeField(verbose_name='时间', max_length=64)
-    status = models.CharField(verbose_name='标记', default='0', max_length=10, null=True)
+    status = models.CharField(verbose_name='标记', default=0, max_length=10)
     priority = models.ForeignKey(to='Priority', on_delete=models.DO_NOTHING, null=True)
     user = models.ForeignKey(to='UserInfo', on_delete=models.DO_NOTHING, null=True)
 

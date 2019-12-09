@@ -6,7 +6,7 @@ from ast import literal_eval  # 将字符串转成字典
 from app_todo.util.hash_pwd import hashpwd
 from app_todo.models import UserInfo
 import uuid
-from app_todo.util.email import sender_code
+from app_todo.util.emails import sender_code
 
 
 class AuthView(ViewSetMixin, APIView):
@@ -57,7 +57,7 @@ class AuthView(ViewSetMixin, APIView):
         email = request.data.get("email")
         is_success = sender_code(email)
         if is_success:
-            ret['data'] = "请注意查收"
+            ret['data'] = "邮件已经发送,请注意查收"
             cache.set('jwt'+username, is_success)
         else:
             ret['code'] = 1001
