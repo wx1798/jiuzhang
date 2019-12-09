@@ -109,6 +109,7 @@ class HomeView(ViewSetMixin, APIView):
         datetime = request.data.get("datetime")
         desc = request.data.get("desc")
         index = request.data.get("index")
+        print(tid, desc)
         index_obj = Priority.objects.get(index=index)
         Todo.objects.filter(id=tid).update(desc=desc, status=status, datetime=datetime, priority=index_obj)
         return Response(ret)
