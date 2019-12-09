@@ -7,10 +7,12 @@
 
 今天:http://127.0.0.1:8000/api/v1/today/
 
-发送邮件:http://127.0.0.1:8000/api/v1/send/
+发送验证码:http://127.0.0.1:8000/api/v1/send/
 
 查:http://127.0.0.1:8000/api/v1/filter/
 
 改 :http://127.0.0.1:8000/api/v1/update/
 
 删 :http://127.0.0.1:8000/api/v1/delete/
+
+发送提醒邮件:http://127.0.0.1:8000/api/v1/email/
